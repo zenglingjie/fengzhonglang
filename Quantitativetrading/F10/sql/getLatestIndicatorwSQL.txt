@@ -1,0 +1,36 @@
+  SELECT b.Secucode,
+        CASE WHEN DATE_FORMAT(a.enddate,'%m%d')=0331 THEN  CONCAT(DATE_FORMAT(a.enddate,'%Y'),'一季报')
+            WHEN DATE_FORMAT(a.enddate,'%m%d')=0630 THEN  CONCAT(DATE_FORMAT(a.enddate,'%Y'),'中报')
+            WHEN DATE_FORMAT(a.enddate,'%m%d')=0930 THEN  CONCAT(DATE_FORMAT(a.enddate,'%Y'),'三季报')
+            WHEN DATE_FORMAT(a.enddate,'%m%d')=1231 THEN  CONCAT(DATE_FORMAT(a.enddate,'%Y'),'年报')
+       END AS report ,
+         c.`PE` ,
+         a.EPS ,
+         d.MainIncomePS*a.ShareCapitalAftereAdjust/100000000 AS totalamt ,
+         f.NPFromParentCompanyOwners/100000000 AS Netprofit ,
+         d.GrossIncomeRatio ,
+         f.WROE ,
+         a.ShareCapitalAftereAdjust/100000000 AS totalShares,
+         e.`AFloatListed`/100000000 AS AFloatListed ,
+         c.PB  ,
+         a.NAPS ,
+         d.OperatingRevenueGrowRate,
+         d.NetProfitGrowRate ,
+         f.NPFromParentCompanyOwners/(d.MainIncomePS*a.ShareCapitalAftereAdjust) AS  netrate ,
+         d.DebtAssetsRatio ,
+         c.TotalMV ,
+         c.NegotiableMV,
+         a.xgrq
+    FROM ( SELECT * FROM (SELECT EPS,ShareCapitalAftereAdjust,NAPS,Companycode,xgrq ,enddate FROM LC_NewestFinaIndex ORDER BY   EndDate DESC) a GROUP BY Companycode) a
+   INNER JOIN (SELECT Secucode,Companycode,`InnerCode` FROM secumain WHERE Secumarket IN (83,90) AND secuCategory=1
+   AND `ListedState`=1 ) b ON a.Companycode=b.Companycode
+   INNER JOIN (SELECT PE,PB,TotalMV,NegotiableMV ,InnerCode  FROM (SELECT PE,PB,TotalMV,NegotiableMV ,InnerCode FROM   LC_DIndicesForValuation   ORDER BY Tradingday DESC) a  GROUP  BY  InnerCode ) c ON b.InnerCode =c.InnerCode -- 无法找到正确的值
+   INNER JOIN (SELECT  MainIncomePS,GrossIncomeRatio,OperatingRevenueGrowRate,NetProfitGrowRate,DebtAssetsRatio,CompanyCode FROM (SELECT MainIncomePS,GrossIncomeRatio,OperatingRevenueGrowRate,NetProfitGrowRate,DebtAssetsRatio,CompanyCode FROM   LC_MainIndexNew   ORDER BY `EndDate` DESC) a  GROUP  BY  `CompanyCode` ) d ON b.CompanyCode =d.CompanyCode -- 无法找到正确的值
+   INNER JOIN LC_NewestShareStru e ON b.CompanyCode =e.CompanyCode
+   INNER JOIN ( SELECT a.NetProfit,a.NPFromParentCompanyOwners,a.OperatingReenue,a.WROE,`EndDate`,`CompanyCode`  FROM(SELECT a.NetProfit,a.NPFromParentCompanyOwners,a.OperatingReenue,a.WROE,`EndDate`,`CompanyCode` FROM  LC_MainDataNew a  ORDER BY EndDate DESC ) a GROUP BY CompanyCode ) f ON b.CompanyCode =f.CompanyCode
+   WHERE a.xgrq >=0
+     and b.Secucode = 000001
+     AND a.enddate IS NOT NULL
+   GROUP BY a.Companycode
+   ORDER BY a.xgrq ASC
+        LIMIT 0,10000

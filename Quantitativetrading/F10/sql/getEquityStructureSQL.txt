@@ -1,0 +1,20 @@
+  SELECT * FROM (
+      SELECT b.`SecuCode`
+            ,a.`EndDate`
+            ,a.ChangeReason 
+            ,a.FloatShare 
+            ,a.FloatShare/a.TotalShares AS Floatraiot 
+            ,a.RestrictedShares 
+            ,a.RestrictedShares/a.TotalShares AS Restrictraiot 
+            ,a.TotalShares 
+            ,a.AFloats 
+            ,a.AFloats/a.TotalShares AS AFloatsraiot 
+            ,a.RestrictedAShares 
+            ,a.RestrictedAShares/a.TotalShares AS  ARestrictraiot
+            ,a.`XGRQ` AS UpdateTime
+        FROM LC_NewestShareStru a
+       INNER JOIN secumain b ON a.`CompanyCode`=b.`CompanyCode` AND b.`SecuCategory`=1 AND `SecuMarket` IN (83,90)
+       WHERE a.`XGRQ`>0
+        AND b.secucode=000001
+         ORDER BY a.`EndDate` DESC ) a
+         GROUP BY SecuCode;

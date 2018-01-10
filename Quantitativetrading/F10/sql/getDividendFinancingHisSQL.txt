@@ -1,0 +1,32 @@
+SELECT * FROM  (     
+    SELECT b.`SecuCode`
+    ,DATE_FORMAT(a.DividendImplementDate,'%Y') AS  DividendImplementDate 
+    ,SUM(a.TotalCashDiviComRMB) TotalCashDiviComRMB 
+    ,IFNULL(c.OutstandingShares,0) AS OutstandingShares
+    ,IFNULL(d.ActualPlaVol,0) AS ActualPlaVol 
+    ,a.`XGRQ` AS UpdateTime
+    FROM LC_Dividend a
+    INNER JOIN Secumain  b ON a.`InnerCode`=b.`InnerCode`  AND b.`SecuCategory`=1 AND `SecuMarket` IN (83,90) AND ListedState=1
+    LEFT JOIN (       
+	SELECT a.`InnerCode`
+	,DATE_FORMAT(a.NewShareListDate,'%Y') AS NewShareListDate
+	,SUM(OutstandingShares) AS  OutstandingShares  
+	FROM LC_AShareSeasonedNewIssue a
+	INNER JOIN Secumain  b ON a.`InnerCode`=b.`InnerCode`  AND b.`SecuCategory`=1 AND `SecuMarket` IN (83,90) AND ListedState=1
+	WHERE a.OutstandingShares IS NOT NULL 
+	GROUP BY b.`SecuCode`,DATE_FORMAT(a.NewShareListDate,'%Y')
+	 ) c ON a.`InnerCode`=c.innercode  AND DATE_FORMAT(a.DividendImplementDate,'%Y') = c.NewShareListDate
+    LEFT JOIN (
+    SELECT a.`InnerCode`
+    ,DATE_FORMAT(a.ExRightDate,'%Y') AS ExRightDate
+    ,SUM(a.ActualPlaVol) AS ActualPlaVol
+    FROM LC_ASharePlacement a 
+	INNER JOIN Secumain  b ON a.`InnerCode`=b.`InnerCode`  AND b.`SecuCategory`=1 AND `SecuMarket` IN (83,90) AND ListedState=1
+    GROUP BY  a.`InnerCode`,DATE_FORMAT(a.ExRightDate,'%Y')
+	) d ON a.`InnerCode`=d.innercode  AND DATE_FORMAT(a.DividendImplementDate,'%Y') = d.ExRightDate
+    WHERE a.`XGRQ`>0
+    AND b.`SecuCode`=000001
+    AND DATE_FORMAT(a.DividendImplementDate,'%Y')  IS NOT NULL
+    GROUP BY b.`SecuCode`,DATE_FORMAT(a.DividendImplementDate,'%Y')
+    ORDER BY a.`DividendImplementDate` DESC )  a
+    GROUP BY SecuCode;

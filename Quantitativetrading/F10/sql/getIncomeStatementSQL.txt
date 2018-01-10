@@ -1,0 +1,92 @@
+SELECT  * FROM ( 
+SELECT 4 AS datatype,
+       b.secucode,
+       c.CSRCInduCategory,
+       CASE WHEN DATE_FORMAT(a.enddate,'%m%d')=0331 THEN  CONCAT(DATE_FORMAT(a.enddate,'%Y'),'一季报') 
+            WHEN DATE_FORMAT(a.enddate,'%m%d')=0630 THEN  CONCAT(DATE_FORMAT(a.enddate,'%Y'),'中报')
+            WHEN DATE_FORMAT(a.enddate,'%m%d')=0930 THEN  CONCAT(DATE_FORMAT(a.enddate,'%Y'),'三季报') 
+            WHEN DATE_FORMAT(a.enddate,'%m%d')=1231 THEN  CONCAT(DATE_FORMAT(a.enddate,'%Y'),'年报') 
+       END AS report ,
+       0 AS comparetype,
+       a.TotalOperatingRevenue,	 
+       a.OperatingRevenue,
+       a.NetInterestIncome,
+       a.InterestIncome,
+       a.InterestExpense,	
+       a.NetCommissionIncome,	
+       a.CommissionIncome,	      
+       a.CommissionExpense,
+       a.NetProxySecuIncome,		
+       a.NetSubIssueSecuIncome,    	
+       a.NetTrustIncome,
+       a.PremiumsEarned,
+       a.PremiumsIncome	,
+       a.ReinsuranceIncome,	
+       a.Reinsurance,
+       a.UnearnedPremiumReserve,
+       a.OtherOperatingRevenue,	
+       a.TotalOperatingCost,
+       a.OperatingPayout,	
+       a.RefundedPremiums,
+       a.CompensationExpense,
+       a.AmortizationExpense,
+       a.PremiumReserve,
+       a.AmortizationPremiumReserve,
+       a.PolicyDividendPayout,
+       a.ReinsuranceCost,
+       a.OperatingAndAdminExpense,
+       a.AmortizationReinsuranceCost,
+       a.InsuranceCommissionExpense,
+       a.OtherOperatingCost,
+       a.OperatingTaxSurcharges,	
+       a.OperatingExpense,
+       a.AdministrationExpense,
+       a.FinancialExpense,
+       a.AssetImpairmentLoss,	
+       a.FairValueChangeIncome,	
+       a.InvestIncome,
+       a.InvestIncomeAssociates,	
+       a.ExchangeIncome,
+       a.OperatingProfit,	
+       a.NonoperatingIncome,
+       a.NonoperatingExpense,
+       a.NonCurrentAssetssDealLoss,	
+       a.TotalProfit,
+       a.IncomeTaxCost,
+       a.NetProfit,
+       a.NPParentCompanyOwners,	
+       a.MinorityProfit,
+       a.OtherCompositeIncome,	      	
+       a.OCIParentCompanyOwners,
+       a.OCIFairValue,		
+       a.OCIMinorityOwners,		
+       a.TotalCompositeIncome,
+       a.CIParentCompanyOwners,
+       a.CIMinorityOwners,	
+       a.BasicEPS,
+       a.DilutedEPS,
+       a.`InfoPublDate`,
+       a.enddate,
+       a.UpdateTime
+       FROM LC_IncomeStatementAll a 
+       LEFT JOIN secumain b ON a.`CompanyCode`=b.`CompanyCode` AND b.`SecuCategory` =1 AND b.`SecuMarket` IN (83,90)
+       INNER JOIN (
+		    SELECT a.companycode,
+			   CASE WHEN a.CSRCInduCategory=20066 THEN 1
+				WHEN a.CSRCInduCategory=20067 THEN 2
+				WHEN a.CSRCInduCategory=20068 THEN 3
+			   ELSE 4
+			   END AS CSRCInduCategory   
+
+		     FROM ( SELECT a.companycode,a.CSRCInduCategory,a.IndustryType FROM LC_Business a ORDER BY infopubldate DESC ) a 
+		    INNER JOIN CT_SystemConst  b ON a.CSRCInduCategory=b.DM AND a.IndustryType=22 AND b.LB=1755 
+		    GROUP BY a.companycode
+		     ) c  ON b.`CompanyCode`=c.`CompanyCode` AND b.`SecuCategory` =1 
+ 
+       WHERE a.UpdateTime>20011122
+       AND b.secucode=000002
+       AND a.IfAdjusted = 2
+       AND a.IfMerged = 1
+       ORDER BY  a.`enddate` DESC 
+       LIMIT 0,1000000 ) a
+       GROUP BY secucode;

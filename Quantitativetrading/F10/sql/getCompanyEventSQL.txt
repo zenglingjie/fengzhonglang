@@ -1,0 +1,19 @@
+SELECT * FROM ( 
+        SELECT 
+         d.`SecuCode`,
+         a.`InfoPublDate`,
+         a.`InfoSource`,
+         a.`Content`,
+         a.UpdateTime
+    FROM LC_GreatEvents a
+    LEFT JOIN LC_GreatEvents_SE b ON a.ID=b.ID 
+    LEFT JOIN (SELECT c.LBMC,c.MS,c.DM 
+           FROM CT_SystemConst  c
+          WHERE LB='1062'
+         ) c  ON b.`Code`=c.DM
+   INNER JOIN Secumain  d ON a.`CompanyCode`=d.`CompanyCode`  AND d.`SecuCategory`=1 AND `SecuMarket` IN (83,90) AND ListedState=1
+   WHERE a.UpdateTime>'0'
+   AND d.`SecuCode`=000001
+   ORDER BY a.`InfoPublDate`  DESC
+   LIMIT 0,100000  ) a
+   GROUP BY SecuCode;

@@ -1,0 +1,17 @@
+     SELECT * FROM (
+           
+                     SELECT b.`SecuCode`
+                           ,DATE_FORMAT(a.PlaProspectusPublDate,'%Y-%m-%d') AS PlaProspectusPublDate
+                           ,SUM(a.ActualPlaVol) AS ActualPlaVol
+                           ,a.PlaProceeds
+                           ,a.PlaPrice
+                           ,a.XGRQ AS UpdateTime 
+                       FROM LC_ASharePlacement a 
+	              INNER JOIN Secumain  b ON a.`InnerCode`=b.`InnerCode`  AND b.`SecuCategory`=1 AND `SecuMarket` IN (83,90) AND ListedState=1
+                      WHERE a.`XGRQ`>0
+                        AND PlaProspectusPublDate IS NOT NULL 
+                     and b.`SecuCode`=000001
+                      GROUP BY  a.`InnerCode`,DATE_FORMAT(a.PlaProspectusPublDate,'%Y')
+                      ORDER BY PlaProspectusPublDate DESC
+             ) a
+             GROUP BY SecuCode;

@@ -1,0 +1,52 @@
+SELECT * FROM  ( 
+ SELECT b.`SecuCode`,
+        a.companycode,
+        a.ChiName,
+        d.ms,
+        a.HStockCode,
+        a.HShareAbbr,
+        e.ConceptName,
+        a.LegalRepr,
+        a.GeneralManager,
+        a.SecretaryBD,
+        a.EstablishmentDate,
+        a.ContactTel,
+        a.ContactEmail,
+        a.Website,
+        a.OfficeAddr,
+        a.RegAddr,
+        a.BriefIntroText,
+        a.BusinessMajor,
+        f.ListDate,
+        f.IssuePrice,
+        f.IssueVol,
+        f.TotalIssueMV,
+        f.LotRateOnline,
+        f.DilutedPERatio,
+        a.`XGRQ` AS UpdateTime
+   FROM secumain b    
+   LEFT JOIN LC_StockArchives a  ON a.`CompanyCode`=b.`CompanyCode` AND b.`SecuCategory`=1 AND `SecuMarket` IN (83,90)
+    LEFT JOIN (SELECT a.companycode,
+                      b.ms,
+                      a.infopubldate
+                 FROM  LC_Business  a 
+                INNER JOIN CT_SystemConst  b ON a.CSRCInduCategory=b.DM AND a.IndustryType=22 AND b.LB=1755
+                INNER JOIN ( SELECT CompanyCode,MAX(c.infopubldate) infopubldate 
+                               FROM LC_Business c  
+                              WHERE c.IndustryType=22
+                              GROUP BY CompanyCode 
+                            ) c ON a.`CompanyCode`=c.CompanyCode AND a.infopubldate=c.infopubldate  
+               ) d ON a.`CompanyCode`=d.companycode
+    LEFT JOIN ( SELECT b.`CompanyCode`, --  
+		       GROUP_CONCAT(c.`ConceptName`)  AS  ConceptName
+		  FROM LC_COConcept a 
+		 INNER JOIN secumain b  ON a.`InnerCode`=b.`InnerCode` AND b.`SecuCategory`=1 AND `SecuMarket` IN (83,90)
+		 INNER JOIN LC_ConceptList c ON a.`ConceptCode`=c.`ConceptCode`
+		 WHERE IndiState=1 
+		   GROUP BY  b.`SecuCode`
+	      ) e ON a.CompanyCode=e.CompanyCode       
+    INNER JOIN LC_AShareIPO  f ON  b.InnerCode=f.`InnerCode`
+	WHERE   a.XGRQ>0  
+	and b.secucode=000001
+	ORDER BY  a.`XGRQ` ASC 
+	)  a  GROUP BY secucode;

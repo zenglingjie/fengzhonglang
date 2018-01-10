@@ -1,0 +1,31 @@
+ SELECT * FROM (
+    SELECT  b.`SecuCode`,
+            CASE WHEN DATE_FORMAT(a.enddate,'%m%d')=0331 THEN  CONCAT(DATE_FORMAT(a.enddate,'%Y'),'1')
+            WHEN DATE_FORMAT(a.enddate,'%m%d')=0630 THEN  CONCAT(DATE_FORMAT(a.enddate,'%Y'),'2')
+            WHEN DATE_FORMAT(a.enddate,'%m%d')=0930 THEN  CONCAT(DATE_FORMAT(a.enddate,'%Y'),'3')
+            WHEN DATE_FORMAT(a.enddate,'%m%d')=1231 THEN  CONCAT(DATE_FORMAT(a.enddate,'%Y'),'4')
+            END AS datatime ,
+            CASE WHEN DATE_FORMAT(a.enddate,'%m%d')=0331 THEN  CONCAT('','1')
+            WHEN DATE_FORMAT(a.enddate,'%m%d')=0630 THEN  CONCAT('','2')
+            WHEN DATE_FORMAT(a.enddate,'%m%d')=0930 THEN  CONCAT('','3')
+            WHEN DATE_FORMAT(a.enddate,'%m%d')=1231 THEN  CONCAT('','4')
+            END AS datatype
+           ,b.`ChiNameAbbr` 
+           ,a.`CompanyCode`
+           ,a.`EndDate` 
+           ,a.`InfoSource` 
+           ,a.`OperatingStatement`
+            ,c.Classification 
+            ,c.Project 
+            ,c.MainOperIncome 
+            ,c.GrossProfit 
+            ,c.MainOperIncome/d.MainOperIncome  AS Incomeratio 
+           ,a.`XGRQ` AS UpdateTime
+      FROM LC_OperatingStatus a
+     INNER JOIN secumain b ON a.`CompanyCode`=b.`CompanyCode` AND b.`SecuCategory`=1 AND `SecuMarket` IN (83,90)
+     INNER JOIN LC_MainOperIncome c ON a.`CompanyCode`=c.`CompanyCode` AND a.`EndDate`=c.`EndDate`  AND c.IfMerged = 1 AND c.IfAdjusted = 2 
+      LEFT JOIN LC_MainOperIncome d ON a.`CompanyCode`=d.`CompanyCode` AND c.Classification=d.`Classification`  AND a.`EndDate`=d.`EndDate`  AND d.IfMerged = 1 AND d.IfAdjusted = 2 AND d.project='合计'
+     WHERE a.`XGRQ`>0
+       AND b.`SecuCode`=000001
+       AND c.project<>'合计'
+     ORDER BY a.enddate DESC ) a GROUP BY SecuCode;

@@ -1,0 +1,16 @@
+SELECT * FROM (
+     		    SELECT b.`SecuCode`
+			  ,DATE_FORMAT(a.IssueStartDate,'%Y-%m-%d') AS UnderwritingStartDate
+			  ,IFNULL(IssueVol,MoneyToAccount/IssuePrice) AS  OutstandingShares
+			  ,MoneyToAccount
+			  ,IssuePrice
+			  ,a.`XGRQ` AS UpdateTime
+	              FROM LC_AShareSeasonedNewIssue a
+	             INNER JOIN Secumain  b ON a.`InnerCode`=b.`InnerCode`  AND b.`SecuCategory`=1 AND `SecuMarket` IN (83,90) AND ListedState=1
+		     WHERE a.IssueStartDate IS NOT NULL 
+                       AND a.`XGRQ`>0
+                     and b.`SecuCode`=000001
+ 
+                     ORDER BY UnderwritingStartDate DESC
+                     ) a
+                     GROUP BY SecuCode;

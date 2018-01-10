@@ -1,0 +1,97 @@
+SELECT * FROM (
+SELECT b.secucode,
+       d.CSRCInduCategory,
+       CASE WHEN DATE_FORMAT(a.enddate,'%m%d')=0331 THEN  CONCAT(DATE_FORMAT(a.enddate,'%Y'),'一季报') 
+       WHEN DATE_FORMAT(a.enddate,'%m%d')=0630 THEN  CONCAT(DATE_FORMAT(a.enddate,'%Y'),'中报')   
+       WHEN DATE_FORMAT(a.enddate,'%m%d')=0930 THEN  CONCAT(DATE_FORMAT(a.enddate,'%Y'),'三季报') 
+       WHEN DATE_FORMAT(a.enddate,'%m%d')=1231 THEN  CONCAT(DATE_FORMAT(a.enddate,'%Y'),'年报') 
+       END AS report ,
+       0 AS comparetype,
+       a.CashOrDepositInCentralBank ,
+       a.ClientDeposit,
+       a.SettlementProvi ,
+       a.ClientProvi ,
+       a.DepositInInterbank,
+       a.RMetal	,
+       a.LendCapital,
+       a.DerivativeAssets,
+       a.LoanAndAccountReceivables,
+       a.BoughtSellbackAssets,
+       a.InterestReceivables,
+       a.AccountReceivables,
+       a.InsuranceReceivables,
+       a.ReinsuranceReceivables,
+       a.OtherReceivable,
+       a.InsurerImpawnLoan,
+       a.LoanAndAdvance	,
+       a.RefundableDeposit,
+       a.FixedDeposit,
+       a.RefundableCapitalDeposit,
+       a.HoldForSaleAssets,
+       a.HoldToMaturityInvestments,
+       a.LongTermEquityInvest,
+       a.InvestmentProperty,
+       a.FixedAssets,
+       a.ConstruInProcess,
+       a.IntangibleAssets,
+       a.GoodWill,
+       a.IndependenceAccountAssets,
+       a.DeferredTaxAssets,
+       a.OtherAssets,
+       a.TotalAssets,
+       a.ShortTermLoan,
+       a.BorrowingFromCentralBank,
+       a.DepositOfInterbank,
+       a.Deposit	,	                                   
+       a.BorrowingCapital	,	                           
+       a.DerivativeLiability,	                   
+       a.SoldBuybackSecuProceeds,	         
+       a.ProxySecuProceeds,        	                   
+       a.SubIssueSecuProceeds,                 
+       a.AdvanceInsurance,	                           
+       a.CommissionPayable,                 
+       a.ReinsurancePayables,	                   
+       a.CompensationPayable,	                     
+       a.PolicyDividendPayable,	                   
+       a.InsurerDepositInvestment,	                        
+       a.SalariesPayable,                         
+       a.TaxsPayable,
+       a.InterestPayable,	                                          
+       a.EstimateLiability,	                           
+       a.LongTermLoan,                               
+       a.BondsPayable,                     	                   
+       a.DeferredTaxLiability,	                 
+       a.OtherLiability,	                             	                     
+       a.TotalLiability,	                                                                                
+       a.PaidInCapital,	                       
+       a.OtherEquityinstruments,                 
+       a.EPreferStock,                          	                               
+       a.CapitalReserveFund,                         	                   
+       a.SurplusReserveFund,                        
+       a.OrdinaryRiskReserveFund,	                 
+       a.RetainedProfit,    
+       a.MinorityInterests,                    
+       a.TotalShareholderEquity,	   
+       a.SEWithoutMI,         	               
+       a.TotalLiabilityAndEquity,
+       a.`UpdateTime`
+       FROM secumain b 
+       INNER JOIN LC_FBalanceSheetNew a  ON a.`CompanyCode`=b.`CompanyCode` AND b.`SecuCategory` =1 AND b.`SecuMarket` IN (83,90)
+       INNER JOIN (
+       SELECT a.companycode,
+       CASE WHEN a.CSRCInduCategory=20066 THEN 1 
+       WHEN a.CSRCInduCategory=20067 THEN 2 
+       WHEN a.CSRCInduCategory=20068 THEN 3 
+       ELSE 4 
+       END AS CSRCInduCategory   
+       FROM ( SELECT a.companycode,a.CSRCInduCategory,a.IndustryType FROM LC_Business a ORDER BY infopubldate DESC ) a 
+       INNER JOIN CT_SystemConst  b ON a.CSRCInduCategory=b.DM AND a.IndustryType=22 AND b.LB=1755 
+       GROUP BY a.companycode
+       ) d  ON b.`CompanyCode`=d.`CompanyCode` AND b.`SecuCategory` =1             
+       WHERE d.CSRCInduCategory IN (1,2,3) 
+       AND b.`SecuCode`=000001
+       AND a.mark=2
+       AND a.UpdateTime>20170101
+       ORDER BY  a.enddate DESC  
+       ) a 
+       GROUP BY secucode;

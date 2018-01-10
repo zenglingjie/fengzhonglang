@@ -1,0 +1,16 @@
+SELECT * FROM (
+      SELECT b.`SecuCode`
+            ,DATE_FORMAT(a.enddate,'%Y-%m-%d')  enddate
+            ,a.SHList
+            ,a.HoldSumChange
+            ,a.HoldSumChangeRate 
+            ,a.PCTOfTotalShares 
+            ,a.`XGRQ` AS UpdateTime
+        FROM LC_MainSHListNew  a
+       INNER JOIN Secumain  b ON a.`CompanyCode`=b.`CompanyCode`  AND b.`SecuCategory`=1 AND `SecuMarket` IN (83,90) AND ListedState=1
+       WHERE a.`XGRQ`>0
+         AND a.InfoTypeCode=2 
+       and b.secucode=000001
+         AND HoldSumChangeRate <>0
+       ORDER BY enddate DESC ) a
+       GROUP BY secucode;

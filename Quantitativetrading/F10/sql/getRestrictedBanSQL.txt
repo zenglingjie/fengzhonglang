@@ -1,0 +1,13 @@
+   SELECT * FROM  (
+   SELECT g.`SecuCode`
+         ,a.StartDateForFloating
+         ,a.NewMarketableAShares
+         ,a.NewMarketableAShares/a.TotalAShares AS  NewMarketableAShares_rate
+         ,NewMarketableSharesSource
+         ,a.UpdateTime
+     FROM LC_SharesFloatingSchedule a
+    INNER JOIN secumain g ON a.`InnerCode`=g.`InnerCode` AND g.`SecuCategory`=1 AND `SecuMarket` IN (83,90)
+    WHERE a.`UpdateTime`>0 
+      AND g.secucode=000001
+    ORDER BY a.StartDateForFloating DESC ) a
+    GROUP BY SecuCode

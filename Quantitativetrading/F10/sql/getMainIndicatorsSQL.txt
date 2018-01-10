@@ -1,0 +1,82 @@
+SELECT b.secucode,
+       h.CSRCInduCategory,
+       CASE WHEN DATE_FORMAT(a.enddate,'%m%d')=0331 THEN  CONCAT(DATE_FORMAT(a.enddate,'%Y'),'一季报') 
+       WHEN DATE_FORMAT(a.enddate,'%m%d')=0630 THEN  CONCAT(DATE_FORMAT(a.enddate,'%Y'),'中报')   
+       WHEN DATE_FORMAT(a.enddate,'%m%d')=0930 THEN  CONCAT(DATE_FORMAT(a.enddate,'%Y'),'三季报') 
+       WHEN DATE_FORMAT(a.enddate,'%m%d')=1231 THEN  CONCAT(DATE_FORMAT(a.enddate,'%Y'),'年报') 
+       END AS report ,
+       a.BasicEPS ,
+       a.BasicEPSCut ,
+       a.DilutedEPS ,
+       a.NAPS,
+       a.CapitalResereFund/a.TotalShares AS cafps ,
+       a.RetainedProfit/a.TotalShares AS upps ,
+       a.NetOperateCashFlow/a.TotalShares AS ocfps,
+       a.OperatingReenue ,
+       a.OperatingProfit ,
+       a.NPFromParentCompanyOwners ,
+       a.NetProfitCut,
+       c.OperatingRevenueGrowRate ,
+       c.NPParentCompanyYOY ,
+       c.NPParentCompanyCutYOY ,
+       d.OperatingRevenueMOM ,
+       d.NetProfitMOM ,
+       c.ROEWeighted ,
+       c.ROECutWeighted ,
+       c.GrossIncomeRatio ,
+       c.NetProfitRatio ,
+       c.CurrentRatio ,
+       c.QuickRatio ,
+       c.DebtEquityRatio,
+       c.DebtAssetsRatio,
+       c.EquityMultipler,
+       c.OperCycle ,
+       c.InventoryTDays,
+       c.ARTDays,
+       c.TotalAssetTRate,
+       c.InventoryTRate ,
+       c.ARTRate,
+       e.TotalDeposit ,
+       e.TotalLoan ,
+       e.TotalDeposit/e.TotalLoan  AS dep_ln ,
+       e.CapitalAdequacyRatio ,
+       e.CoreCapitalAdequacyRatio ,
+       e.NonPerformingRatio,
+       e.BLoanCoverRatio ,
+       e.NetCapitalBank ,
+       f.NetCapital ,
+       f.NetAsset ,
+       f.RatioOfNetCapital ,
+       f.FixIncomeToNetCapital ,
+       g.IncomeRatioComp , 
+       g.IncomeRatioComp,
+       g.EarnedPremiumComp,
+       g.PayOffComp ,
+       g.SurrenderRatioLife,
+       g.InsolvencyRatioLife,
+       a.enddate,
+       a.`UpdateTime`
+       FROM LC_MainDataNew  a 
+       INNER JOIN secumain b ON a.`CompanyCode`=b.`CompanyCode` AND b.`SecuCategory` =1 AND b.`SecuMarket` IN (83,90)
+       LEFT JOIN LC_MainIndexNew c ON a.CompanyCode=c.CompanyCode AND a.EndDate=c.EndDate
+       LEFT JOIN LC_QFinancialIndexNew d ON a.CompanyCode=d.CompanyCode  AND a.EndDate=d.enddate AND d.Mark =2 AND a.EndDate=d.EndDate
+       LEFT JOIN LC_FinanceSpecialIndex e ON a.CompanyCode= e.CompanyCode AND e.Mark=2 AND e.IfMerged =1 AND e.IfAdjusted = 1 AND e.datatype=1 AND a.EndDate=e.EndDate
+       LEFT JOIN LC_FinanceSpecialIndexSC f ON a.CompanyCode=f.CompanyCode AND f.mark=2 AND f.datatype=1 AND a.EndDate=f.EndDate
+       LEFT JOIN LC_FinanceSpecialIndexIC g ON a.CompanyCode=g.CompanyCode AND g.mark=2 AND g.datatype=1 AND a.EndDate=g.EndDate
+       INNER JOIN (
+       SELECT a.companycode,
+       CASE WHEN a.CSRCInduCategory=20066 THEN 1
+       WHEN a.CSRCInduCategory=20067 THEN 2
+       WHEN a.CSRCInduCategory=20068 THEN 3
+       ELSE 4
+       END AS CSRCInduCategory   
+
+       FROM  LC_Business  a 
+       INNER JOIN CT_SystemConst  b ON a.CSRCInduCategory=b.DM AND a.IndustryType=22 AND b.LB=1755 
+       ) h  ON b.`CompanyCode`=h.`CompanyCode` AND b.`SecuCategory` =1 
+       WHERE a.`UpdateTime`>0
+       AND a.mark=1
+       #AND b.secucode=600036
+       AND b.secucode IN (600036,601318,000725,000651,603019,300666,603160)
+       
+      

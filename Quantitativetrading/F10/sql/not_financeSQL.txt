@@ -1,0 +1,85 @@
+SELECT * FROM (
+SELECT b.secucode,
+       d.CSRCInduCategory,
+       CASE WHEN DATE_FORMAT(a.enddate,'%m%d')=0331 THEN  CONCAT(DATE_FORMAT(a.enddate,'%Y'),'一季报') 
+            WHEN DATE_FORMAT(a.enddate,'%m%d')=0630 THEN  CONCAT(DATE_FORMAT(a.enddate,'%Y'),'中报')   
+            WHEN DATE_FORMAT(a.enddate,'%m%d')=0930 THEN  CONCAT(DATE_FORMAT(a.enddate,'%Y'),'三季报') 
+            WHEN DATE_FORMAT(a.enddate,'%m%d')=1231 THEN  CONCAT(DATE_FORMAT(a.enddate,'%Y'),'年报') 
+       END AS report ,
+       0 AS comparetype,
+       a.CashEquivalents ,
+       a.AccountReceivable ,
+       a.AdvancePayment	,
+       a.OtherReceivable ,
+       a.Inventories ,
+       a.HoldAndFSAssets,
+       a.OtherCurrentAssets ,
+       a.TotalCurrentAssets ,
+       a.HoldForSaleAssets,
+       a.LongtermEquityInvest ,
+       a.InvestmentProperty,
+       a.FixedAssets,
+       a.ConstruInProcess,
+       a.IntangibleAssets,
+       a.GoodWill,
+       a.LongDeferredExpense,
+       a.DeferredTaxAssets,
+       a.OtherNonCurrentAssets,
+       a.TotalNonCurrentAssets,
+       a.TotalAssets ,
+       a.ShortTermLoan,
+       a.NotesPayable,
+       a.AccountsPayable,
+       a.AdvanceReceipts,
+       a.SalariesPayable,
+       a.TaxsPayable,
+       a.InterestPayable,
+       a.OtherPayable,
+       a.NonCurrentLiabilityIn1Year,
+       a.OtherCurrentLiability,
+       a.TotalCurrentLiability,
+       a.LongtermLoan,
+       a.BondsPayable,
+       a.EstimateLiability,
+       a.DeferredTaxLiability,
+       a.OtherNonCurrentLiability,
+       a.TotalNonCurrentLiability,
+       a.TotalLiability,
+       a.PaidInCapital, 
+       a.CapitalReserveFund,
+       a.SurplusReserveFund,
+       a.RetainedProfit,
+       a.SEWithoutMI,
+       a.MinorityInterests,
+       a.TotalShareholderEquity,
+       a.TotalLiabilityAndEquity,
+       a.enddate,
+       a.`UpdateTime`
+       FROM secumain b 
+       INNER JOIN LC_BalanceSheetAll a  ON a.`CompanyCode`=b.`CompanyCode` AND b.`SecuCategory` =1 AND b.`SecuMarket` IN (83,90)
+       INNER JOIN LC_BalanceSheetAll c ON b.CompanyCode=c.CompanyCode AND DATE_FORMAT(DATE_ADD(a.EndDate, INTERVAL -1 YEAR),'%Y%m%d')=DATE_FORMAT(c.EndDate,'%Y%m%d') AND c.IfAdjusted = 2 AND c.IfMerged = 1
+       INNER JOIN (
+              SELECT a.companycode,
+ 			   CASE WHEN a.CSRCInduCategory=20066 THEN 1
+ 				WHEN a.CSRCInduCategory=20067 THEN 2
+ 				WHEN a.CSRCInduCategory=20068 THEN 3
+ 			   ELSE 4
+ 			   END AS CSRCInduCategory   
+                FROM  LC_Business  a 
+               INNER JOIN CT_SystemConst  b ON a.CSRCInduCategory=b.DM AND a.IndustryType=22 AND b.LB=1755
+               INNER JOIN ( SELECT CompanyCode,MAX(c.infopubldate) infopubldate 
+                              FROM LC_Business c  
+                             WHERE c.IndustryType=22
+                             GROUP BY CompanyCode 
+                           ) c ON a.`CompanyCode`=c.CompanyCode AND a.infopubldate=c.infopubldate
+
+             ) d  ON b.`CompanyCode`=d.`CompanyCode` AND b.`SecuCategory` =1         
+       WHERE d.CSRCInduCategory=4
+       AND b.`SecuCode`=000725
+       AND a.IfAdjusted = 2
+       AND a.IfMerged = 1
+       ORDER BY  a.`enddate` DESC
+       LIMIT 0,10000 ) a 
+       GROUP BY secucode; 
+ 
+ 

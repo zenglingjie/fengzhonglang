@@ -1,0 +1,11 @@
+     SELECT *  FROM(
+    SELECT c.`SecuCode`
+          ,a.`RelatedPartyName`
+          ,a.EquityRatio 
+          ,a.RegCapital
+          ,a.`XGRQ` AS UpdateTime
+      FROM LC_Relationship  a
+     INNER JOIN secumain c ON a.`CompanyCode`=c.`CompanyCode`   AND c.`SecuCategory`=1 AND c.`SecuMarket` IN (83,90)   
+     WHERE a.`XGRQ`>0
+     AND c.secucode=000001
+     ORDER BY a.`EquityRatio` DESC) a GROUP BY secucode

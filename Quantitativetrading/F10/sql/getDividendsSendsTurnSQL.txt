@@ -1,0 +1,15 @@
+SELECT * FROM (
+        SELECT b.`SecuCode`
+              ,a.DividendImplementDate 
+              ,a.CashDiviRMB
+              ,a.RightRegDate
+              ,a.ExDiviDate
+              ,a.ToAccountDate
+              ,a.`XGRQ` AS UpdateTime
+          FROM LC_Dividend a
+         INNER JOIN Secumain  b ON a.`InnerCode`=b.`InnerCode`  AND b.`SecuCategory`=1 AND `SecuMarket` IN (83,90) AND ListedState=1
+         WHERE a.`XGRQ`>0
+         and b.`SecuCode`=600036
+           AND a.DividendImplementDate IS NOT NULL
+         ORDER BY a.`DividendImplementDate` DESC ) a
+         GROUP BY secucode;

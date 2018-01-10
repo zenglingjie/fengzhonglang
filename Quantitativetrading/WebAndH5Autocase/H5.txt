@@ -1,0 +1,25 @@
+*** Settings ***
+Library           AppiumLibrary
+
+*** Test Cases ***
+1
+    Open Application    http://localhost:4723/wd/hub    platformName=Android    platformVersion=4.4.2    deviceName=127.0.0.1:62001    appPackage=com.qifuxiang.tgw    appActivity=com.qifuxiang.ui.ActivityInitData
+    ...    unicodeKeyboard=${True}    resetKeyboard=${True}
+    sleep    5
+    Click Element At Coordinates    600    400
+    sleep    5
+    click element    //*[@id="app"]/section/div/div[1]/div[2]/div[1]/a/label/input
+    Element Should Contain Text    //*[@id="app"]/section/div/div[1]/div[2]/div[1]/a/label/input    <0
+    click element    /html/body/div[2]/div[2]/div[1]/a[2]
+    sleep    3
+    Element Should Contain Text    //*[@id="app"]/section/div/div[9]/div[2]/a    查看结果
+    click element    //*[@id="app"]/section/div/div[9]/div[2]/a
+    sleep    3
+    Element Should Contain Text    //*[@id="app"]/div/div[1]/ul/li    净利润同比 <0
+    Element Should Contain Text    //*[@id="app"]/div/div[3]/table/tbody/tr[2]/td[1]/p    航发控制
+    sleep    3
+    Element Should Contain Text    //*[@id="app"]/div/div[3]/table/tbody/tr[6]/td[1]/p    普 利 特
+    click element    //*[@id="app"]/div/div[4]/a/button
+    sleep    3
+    click element    //*[@id="app"]/section/div[6]/div/a
+    Element Should Contain Text    //*[@id="message"]/text()[1]    {"type": "curve", "data": {"dt": "2017-08-02 15:30:00",

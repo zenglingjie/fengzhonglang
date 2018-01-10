@@ -1,0 +1,28 @@
+    SELECT * FROM (
+     SELECT b.`SecuCode`
+           ,a.`LeaderName`
+           ,a.BeginningDate
+           ,CASE WHEN c.LeaderGender=1 THEN '男' ELSE '女' END AS LeaderGender
+           ,CASE WHEN c.LeaderDegree=1 THEN '博士后'
+                 WHEN c.LeaderDegree=2 THEN '博士'
+                 WHEN c.LeaderDegree=3 THEN '硕士'
+                 WHEN c.LeaderDegree=4 THEN '本科'
+                 WHEN c.LeaderDegree=5 THEN '大专'
+                 WHEN c.LeaderDegree=6 THEN '高中'
+                 WHEN c.LeaderDegree=7 THEN '中专'
+                 WHEN c.LeaderDegree=7 THEN '其他'
+            END  AS LeaderDegree 
+           ,TIMESTAMPDIFF(YEAR,a.`BirthYM`,NOW()) AS ages
+           ,GROUP_CONCAT(a.`Position`) AS `POSITION`
+           ,GROUP_CONCAT(a.`PositionCode`) AS  PositionCode 
+           ,c.`Background`
+           ,a.`UpdateTime`
+       FROM LC_LeaderPosition a 
+      INNER JOIN secumain b ON a.`CompanyCode`=b.`CompanyCode` AND b.`SecuCategory`=1 AND `SecuMarket` IN (83,90)
+       LEFT JOIN LC_LeaderIntroduce c ON  a.CompanyCode = c.CompanyCode AND a.`LeaderName`=c.`LeaderName`
+ 
+      WHERE a.`UpdateTime`>0
+      AND b.SecuCode=000001
+      AND a.`IfPosition`=1
+      GROUP BY a.LeaderName
+      ORDER BY a.`UpdateTime` ) a GROUP BY SecuCode

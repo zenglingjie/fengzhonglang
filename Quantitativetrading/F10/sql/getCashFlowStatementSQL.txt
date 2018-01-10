@@ -1,0 +1,87 @@
+﻿SELECT * FROM  (
+       SELECT 1 AS datatype,
+       b.secucode,
+       c.CSRCInduCategory,
+       CASE WHEN DATE_FORMAT(a.enddate,'%m%d')=0331 THEN  CONCAT(DATE_FORMAT(a.enddate,'%Y'),'一季度') 
+               WHEN DATE_FORMAT(a.enddate,'%m%d')=0630 THEN  CONCAT(DATE_FORMAT(a.enddate,'%Y'),'二季度')   
+               WHEN DATE_FORMAT(a.enddate,'%m%d')=0930 THEN  CONCAT(DATE_FORMAT(a.enddate,'%Y'),'三季度') 
+               WHEN DATE_FORMAT(a.enddate,'%m%d')=1231 THEN  CONCAT(DATE_FORMAT(a.enddate,'%Y'),'四季度') 
+       END AS report ,
+       0 AS comparetype,
+       a.GoodsSaleServiceRenderCash,		
+       a.TaxLevyRefund,
+       a.NetDepositIncrease,	
+       a.NetBorrowingFromCentralBank,
+       a.NetBorrowingFromFinanceCo,	
+       a.InterestAndCommissionCashIn,	
+       a.NetDealTradingAssets,	
+       a.NetBuyBack,
+       a.NetOriginalInsuranceCash,	
+       a.NetReinsuranceCash,
+       a.NetInsurerDepositInvestment,		
+       a.OtherCashInRelatedOperate,		
+       a.SubtotalOperateCashInflow,	
+       a.GoodsServicesCashPaid,	
+       a.StaffBehalfPaid,	
+       a.AllTaxesPaid,
+       a.NetLoanAndAdvanceIncrease,	
+       a.NetDepositInCBAndIB,	
+       a.NetLendCapital,
+       a.CommissionCashPaid,
+       a.OriginalCompensationPaid,			
+       a.NetCashForReinsurance,
+       a.PolicyDividendCashPaid,
+       a.OtherOperateCashPaid,
+       a.SubtotalOperateCashOutflow,		
+       a.NetOperateCashFlow,			
+       a.InvestWithdrawalCash,			
+       a.Investproceeds,
+       a.FixIntanOtherAssetDispoCash,			
+       a.NetCashDealSubCompany,		
+       a.OtherCashFromInvestAct,			
+       a.SubtotalInvestCashInflow,		
+       a.FixIntanOtherAssetAcquiCash,			
+       a.InvestCashPaid,		
+       a.NetCashFromSubCompany,			
+       a.ImpawnedLoanNetIncrease,		
+       a.OtherCashToInvestAct,		
+       a.SubtotalInvestCashOutflow,	
+       a.NetInvestCashFlow,
+       a.CashFromInvest,
+       a.CashFromMinoSInvestSub,		
+       a.CashFromBondsIssue,	
+       a.CashFromBorrowing,	
+       a.OtherFinanceActCash,	
+       a.SubtotalFinanceCashInflow,		
+       a.BorrowingRepayment,
+       a.DividendInterestPayment,
+       a.ProceedsFromSubToMinoS,		
+       a.OtherFinanceActPayment,
+       a.SubtotalFinanceCashOutflow,
+       a.NetFinanceCashFlow,	
+       a.ExchanRateChangeEffect,				
+       a.CashEquivalentIncrease,		
+       a.`InfoPublDate`,
+       a.enddate,
+       a.`UpdateTime`
+     FROM LC_QCashFlowStatementNew a 
+     LEFT JOIN secumain b ON a.`CompanyCode`=b.`CompanyCode` AND b.`SecuCategory` =1 AND b.`SecuMarket` IN (83,90)
+     INNER JOIN (
+		    SELECT a.companycode,
+			   CASE WHEN a.CSRCInduCategory=20066 THEN 1 
+				WHEN a.CSRCInduCategory=20067 THEN 2 
+				WHEN a.CSRCInduCategory=20068 THEN 3 
+			   ELSE 4 
+			   END AS CSRCInduCategory   
+
+		     FROM ( SELECT a.companycode,a.CSRCInduCategory,a.IndustryType FROM LC_Business a ORDER BY infopubldate DESC ) a 
+		    INNER JOIN CT_SystemConst  b ON a.CSRCInduCategory=b.DM AND a.IndustryType=22 AND b.LB=1755 
+		    GROUP BY a.companycode
+		     ) c  ON b.`CompanyCode`=c.`CompanyCode` AND b.`SecuCategory` =1 
+     WHERE a.UpdateTime>0
+     AND b.secucode=000725
+     AND a.mark=2
+     ORDER BY  a.enddate DESC 
+     LIMIT 0,10000 ) a
+     GROUP BY secucode;
+  

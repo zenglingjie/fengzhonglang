@@ -1,0 +1,81 @@
+*** Settings ***
+Library           ../../tgw_robot/libs/test_dist_simulate_trade.py
+
+*** Test Cases ***
+510010 治理ETF
+    ${req}    Create Dictionary    MsgSeqID=${0}    UserID=${982}    AccountID=${2}    StockHolderNo=0    SecuCode=${510010}
+    ...    Market=${65538}    Volume=${2}    Price=${1.2}    Direct=${1}    TraceuserID=${0}
+    ${reply}    REQ_DELTEGATE_ORDER    ${req}    ${None}
+    log    ${reply}
+    log    ${reply["ErrCode"]}
+    should be equal    ${reply["ErrCode"]}    ${0}
+
+510020 超大ETF
+    ${req}    Create Dictionary    MsgSeqID=${0}    UserID=${982}    AccountID=${2}    StockHolderNo=0    SecuCode=${510020}
+    ...    Market=${65538}    Volume=${2}    Price=${5}    Direct=${1}    TraceuserID=${0}
+    ${reply}    REQ_DELTEGATE_ORDER    ${req}    ${None}
+    log    ${reply}
+    should be equal    ${reply["ErrCode"]}    ${0}
+
+510030 价值ETF
+    ${req}    Create Dictionary    MsgSeqID=${0}    UserID=${982}    AccountID=${2}    StockHolderNo=0    SecuCode=${510030}
+    ...    Market=${65538}    Volume=${2}    Price=${5}    Direct=${1}    TraceuserID=${0}
+    ${reply}    REQ_DELTEGATE_ORDER    ${req}    ${None}
+    log    ${reply}
+    should be equal    ${reply["ErrCode"]}    ${0}
+
+510060 央企ETF
+    ${req}    Create Dictionary    MsgSeqID=${0}    UserID=${982}    AccountID=${2}    StockHolderNo=0    SecuCode=${510060}
+    ...    Market=${65538}    Volume=${2}    Price=${5}    Direct=${1}    TraceuserID=${0}
+    ${reply}    REQ_DELTEGATE_ORDER    ${req}    ${None}
+    log    ${reply}
+    should be equal    ${reply["ErrCode"]}    ${0}
+
+510070 民企ETF
+    ${req}    Create Dictionary    MsgSeqID=${0}    UserID=${982}    AccountID=${2}    StockHolderNo=0    SecuCode=${510070}
+    ...    Market=${65538}    Volume=${2}    Price=${5}    Direct=${1}    TraceuserID=${0}
+    ${reply}    REQ_DELTEGATE_ORDER    ${req}    ${None}
+    log    ${reply}
+    should be equal    ${reply["ErrCode"]}    ${0}
+
+510090 责任ETF
+    ${req}    Create Dictionary    MsgSeqID=${0}    UserID=${982}    AccountID=${2}    StockHolderNo=0    SecuCode=${510090}
+    ...    Market=${65538}    Volume=${2}    Price=${5}    Direct=${1}    TraceuserID=${0}
+    ${reply}    REQ_DELTEGATE_ORDER    ${req}    ${None}
+    log    ${reply}
+    should be equal    ${reply["ErrCode"]}    ${0}
+
+510110 周期ETF
+    ${req}    Create Dictionary    MsgSeqID=${0}    UserID=${982}    AccountID=${2}    StockHolderNo=0    SecuCode=${510110}
+    ...    Market=${65538}    Volume=${2}    Price=${5}    Direct=${1}    TraceuserID=${0}
+    ${reply}    REQ_DELTEGATE_ORDER    ${req}    ${None}
+    log    ${reply}
+    should be equal    ${reply["ErrCode"]}    ${0}
+
+510130 中盘ETF
+    ${req}    Create Dictionary    MsgSeqID=${0}    UserID=${982}    AccountID=${2}    StockHolderNo=0    SecuCode=${510130}
+    ...    Market=${65538}    Volume=${2}    Price=${5}    Direct=${1}    TraceuserID=${0}
+    ${reply}    REQ_DELTEGATE_ORDER    ${req}    ${None}
+    log    ${reply}
+    should be equal    ${reply["ErrCode"]}    ${0}
+
+510150 消费ETF
+    ${req}    Create Dictionary    MsgSeqID=${0}    UserID=${982}    AccountID=${2}    StockHolderNo=0    SecuCode=${510150}
+    ...    Market=${65538}    Volume=${2}    Price=${5}    Direct=${1}    TraceuserID=${0}
+    ${reply}    REQ_DELTEGATE_ORDER    ${req}    ${None}
+    log    ${reply}
+    should be equal    ${reply["ErrCode"]}    ${0}
+
+510170 商品ETF
+    ${req}    Create Dictionary    MsgSeqID=${0}    UserID=${982}    AccountID=${2}    StockHolderNo=0    SecuCode=${510170}
+    ...    Market=${65538}    Volume=${2}    Price=${5}    Direct=${1}    TraceuserID=${0}
+    ${reply}    REQ_DELTEGATE_ORDER    ${req}    ${None}
+    log    ${reply}
+    should be equal    ${reply["ErrCode"]}    ${0}
+
+510190 龙头ETF
+    ${req}    Create Dictionary    MsgSeqID=${0}    UserID=${982}    AccountID=${2}    StockHolderNo=0    SecuCode=${510190}
+    ...    Market=${65538}    Volume=${2}    Price=${5}    Direct=${1}    TraceuserID=${0}
+    ${reply}    REQ_DELTEGATE_ORDER    ${req}    ${None}
+    log    ${reply}
+    should be equal    ${reply["ErrCode"]}    ${0}

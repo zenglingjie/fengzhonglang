@@ -1,0 +1,40 @@
+SELECT * FROM  (
+       SELECT b.SecuCode
+             ,b.innercode
+             ,a.EndDate 
+             ,a.SHNum
+             ,(c.SHNum-a.SHNum)/c.SHNum AS SHNumratio
+             ,a.ASHNum 
+             ,(c.ASHNum-a.ASHNum)/c.ASHNum  AS ASHNumratio 
+             ,a.HSHNum 
+             ,(c.HSHNum-a.HSHNum)/c.HSHNum  AS HSHNumratio 
+             ,a.AFHoldPropTA 
+             ,(c.AFHoldPropTA-a.AFHoldPropTA)/c.AFHoldPropTA  AS  AFHoldPropratio
+            
+           
+             ,h.Top10StockholdersProp
+             ,H.Top10NRHoldersAmountToNRS
+             ,a.`XGRQ` AS UpdateTime
+         FROM LC_SHNumber a
+	INNER JOIN( 
+		      SELECT b.`SecuCode`
+			    ,a.`CompanyCode`
+			    ,a.EndDate
+			    ,b.innercode
+			    ,MAX(c.EndDate) AS  CEndDate
+			FROM LC_SHNumber  a 
+		       INNER JOIN secumain b ON a.`CompanyCode`=b.`CompanyCode` AND b.`SecuCategory`=1 AND `SecuMarket` IN (83,90)
+			,(SELECT companycode,enddate,SHNum,ASHNum,HSHNum  FROM LC_SHNumber c ) c
+		       WHERE a.`companycode`=c.`companycode` 
+		       AND c.EndDate < a.EndDate
+		       GROUP BY a.CompanyCode,a.EndDate 
+		       ORDER BY a.EndDate  DESC 
+		   ) b ON a.CompanyCode=b.CompanyCode AND a.EndDate=b.EndDate
+         LEFT JOIN LC_SHNumber c ON b.CompanyCode=c.CompanyCode AND b.CEndDate=c.EndDate
+        INNER JOIN secumain g ON a.`CompanyCode`=g.`CompanyCode` AND g.`SecuCategory`=1 AND `SecuMarket` IN (83,90)
+         LEFT JOIN LC_StockHoldingSt h ON a.`CompanyCode`=h.companycode AND h.EndDate = a.EndDate
+	 WHERE a.`XGRQ`>0
+         AND g.secucode=000001
+	 ORDER BY EndDate DESC
+	 LIMIT 0,100000   ) a
+	 GROUP BY SecuCode; 

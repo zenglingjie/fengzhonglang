@@ -1,0 +1,14 @@
+SELECT * FROM (
+      SELECT b.secucode
+            ,DATE_FORMAT(a.TranDate,'%Y-%m-%d') AS TranDate 
+            ,a.DealPrice 
+            ,a.DealTurnover 
+            ,a.ReceiverName	
+            ,a.TransfererName
+            ,a.`XGRQ` AS UpdateTime
+        FROM LC_ShareTransfer a
+       INNER JOIN Secumain  b ON a.`InnerCode`=b.`InnerCode`  AND b.`SecuCategory`=1 AND `SecuMarket` IN (83,90) AND ListedState=1
+       WHERE a.`XGRQ`>0
+       and b.secucode=000001
+       ORDER BY TranDate DESC ) a 
+       GROUP BY secucode;

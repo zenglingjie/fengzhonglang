@@ -1,0 +1,14 @@
+     SELECT g.`SecuCode`
+           ,InfoTypeCode AS datatype
+           ,a.SHlist
+           ,a.`EndDate`
+           ,a.HoldSum 
+           ,CASE WHEN InfoTypeCode = 1 THEN a.PCTOfTotalShares ELSE a.PCTOfFloatShares END AS  PCTOfFloat
+           ,a.HoldSumChange
+           ,a.HoldSumChangeRate	
+           ,a.`XGRQ` AS UpdateTime
+       FROM LC_MainSHListNew a
+      INNER JOIN secumain g ON a.`CompanyCode`=g.`CompanyCode` AND g.`SecuCategory`=1 AND `SecuMarket` IN (83,90)
+      WHERE a.`XGRQ`>0
+      AND g.secucode=000001
+      ORDER BY a.`EndDate` DESC;
